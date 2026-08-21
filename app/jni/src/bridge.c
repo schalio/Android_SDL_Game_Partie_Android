@@ -88,6 +88,8 @@ int SDL_main(int argc, char *argv[]) {
     rust_app_set_screen_size(app, screen_w, screen_h);
 
     int running = 1;
+    int game_over = 0;
+
     uint32_t previous = SDL_GetTicks();
     int32_t last_score = -1;
 
@@ -100,11 +102,26 @@ int SDL_main(int argc, char *argv[]) {
                     running = 0;
                     break;
 
-                case SDL_FINGERDOWN:
+                case SDL_FINGERDOWN: {
+                    if (game_over) {
+                        rust_app_restart(app);
+                        game_over = 0;
+                        last_score = -1;
+                        SDL_Log("Game restarted");
+                    } else {
+                        float px = event.tfinger.x * (float)screen_w;
+                        float py = event.tfinger.y * (float)screen_h;
+                        rust_app_on_touch(app, px, py);
+                    }
+                    break;
+                }
+
                 case SDL_FINGERMOTION: {
-                    float px = event.tfinger.x * (float)screen_w;
-                    float py = event.tfinger.y * (float)screen_h;
-                    rust_app_on_touch(app, px, py);
+                    if (!game_over) {
+                        float px = event.tfinger.x * (float) screen_w;
+                        float py = event.tfinger.y * (float) screen_h;
+                        rust_app_on_touch(app, px, py);
+                    }
                     break;
                 }
 
@@ -124,6 +141,8 @@ int SDL_main(int argc, char *argv[]) {
         if (!rust_app_get_scene(app, &scene)) {
             continue;
         }
+
+        game_over = scene.game_over;
 
         if (scene.score != last_score) {
             SDL_Log("Score: %d", scene.score);
@@ -175,7 +194,17 @@ int SDL_main(int argc, char *argv[]) {
         SDL_RenderFillRect(renderer, &player_rect);
 
         hud_render_score(renderer, &hud, scene.score);
+        hud_render_lives(renderer, &hud, scene.lives);
 
+        if (scene.game_over) {
+            hud_render_game_over(
+                    renderer,
+                    &hud,
+                    screen_w,
+                    screen_h,
+                    scene.score
+            );
+        }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);

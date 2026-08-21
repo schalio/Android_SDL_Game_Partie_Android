@@ -22,6 +22,8 @@ typedef struct SceneData {
     Rect enemy;
     Rect wall;
     int32_t score;
+    int32_t lives;
+    int32_t game_over;
     int32_t player_is_flashing;
 } SceneData;
 
@@ -30,6 +32,7 @@ extern void rust_app_set_screen_size(AppState* app, int32_t w, int32_t h);
 extern void rust_app_on_touch(AppState* app, float x, float y);
 extern int32_t rust_app_update(AppState* app, float dt);
 extern int32_t rust_app_get_scene(const AppState* app, SceneData* out_scene);
+extern void rust_app_restart(AppState* app);
 extern void rust_app_destroy(AppState* app);
 
 #ifdef __cplusplus
