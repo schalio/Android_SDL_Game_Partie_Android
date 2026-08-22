@@ -14,6 +14,7 @@ int hud_load(Hud *hud);
 void hud_destroy(Hud *hud);
 
 void hud_render_score(SDL_Renderer *renderer, const Hud *hud, int score);
+void hud_render_level(SDL_Renderer *renderer, const Hud *hud, int level);
 void hud_render_lives(SDL_Renderer *renderer, const Hud *hud, int score);
 
 void hud_render_game_over(

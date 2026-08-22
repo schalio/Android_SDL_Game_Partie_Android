@@ -22,6 +22,7 @@ typedef struct SceneData {
     Rect enemy;
     Rect wall;
     int32_t score;
+    int32_t level;
     int32_t lives;
     int32_t game_over;
     int32_t player_is_flashing;

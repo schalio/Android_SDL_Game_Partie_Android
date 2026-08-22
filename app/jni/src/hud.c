@@ -109,6 +109,32 @@ void hud_render_score(SDL_Renderer *renderer, const Hud *hud, int score) {
     );
 }
 
+void hud_render_level(SDL_Renderer *renderer, const Hud *hud, int level) {
+    if (!renderer) {
+        SDL_Log("hud_render_level: renderer is NULL");
+        return;
+    }
+
+    if (!hud || !hud->font) {
+        SDL_Log("hud_render_level: hud/font is NULL");
+        return;
+    }
+
+    char level_text[64];
+    snprintf(level_text, sizeof(level_text), "Niveau: %d", level);
+
+    SDL_Color text_color = {255, 255, 255, 255};
+
+    hud_render_text(
+            renderer,
+            hud->font,
+            level_text,
+            text_color,
+            24,
+            84
+    );
+}
+
 void hud_render_lives(SDL_Renderer *renderer, const Hud *hud, int lives) {
     char lives_text[64];
     snprintf(lives_text, sizeof(lives_text), "Vies: %d", lives);
@@ -121,7 +147,7 @@ void hud_render_lives(SDL_Renderer *renderer, const Hud *hud, int lives) {
             lives_text,
             text_color,
             24,
-            84
+            144
     );
 }
 
