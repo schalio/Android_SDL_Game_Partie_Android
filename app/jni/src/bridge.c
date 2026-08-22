@@ -164,25 +164,49 @@ int SDL_main(int argc, char *argv[]) {
         SDL_RenderClear(renderer);
 
         SDL_Rect wall_rect = {
-                scene.wall.x, scene.wall.y, scene.wall.w, scene.wall.h
+                scene.wall.x,
+                scene.wall.y,
+                scene.wall.w,
+                scene.wall.h
         };
         SDL_SetRenderDrawColor(renderer, 110, 110, 110, 255);
         SDL_RenderFillRect(renderer, &wall_rect);
 
         SDL_Rect target_rect = {
-                scene.target.x, scene.target.y, scene.target.w, scene.target.h
+                scene.target.x,
+                scene.target.y,
+                scene.target.w,
+                scene.target.h
         };
         SDL_SetRenderDrawColor(renderer, 70, 220, 120, 255);
         SDL_RenderFillRect(renderer, &target_rect);
 
+        if (scene.golden_target_active) {
+            SDL_Rect golden_target_rect = {
+                    scene.golden_target.x,
+                    scene.golden_target.y,
+                    scene.golden_target.w,
+                    scene.golden_target.h
+            };
+
+            SDL_SetRenderDrawColor(renderer, 245, 190, 45, 255);
+            SDL_RenderFillRect(renderer, &golden_target_rect);
+        }
+
         SDL_Rect enemy_rect = {
-                scene.enemy.x, scene.enemy.y, scene.enemy.w, scene.enemy.h
+                scene.enemy.x,
+                scene.enemy.y,
+                scene.enemy.w,
+                scene.enemy.h
         };
         SDL_SetRenderDrawColor(renderer, 220, 70, 70, 255);
         SDL_RenderFillRect(renderer, &enemy_rect);
 
         SDL_Rect player_rect = {
-                scene.player.x, scene.player.y, scene.player.w, scene.player.h
+                scene.player.x,
+                scene.player.y,
+                scene.player.w,
+                scene.player.h
         };
 
         if (scene.player_is_flashing) {

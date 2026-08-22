@@ -19,6 +19,8 @@ typedef struct Rect {
 typedef struct SceneData {
     Rect player;
     Rect target;
+    Rect golden_target;
+    int32_t golden_target_active;
     Rect enemy;
     Rect wall;
     int32_t score;
