@@ -31,12 +31,14 @@ void audio_assets_init(AudioAssets *audio) {
 int audio_assets_load(AudioAssets *audio) {
     static const char *sound_paths[SOUND_COUNT] = {
             [SOUND_COLLECT] = "sounds/collect.wav",
-            [SOUND_HIT] = "sounds/hit.wav"
+            [SOUND_HIT] = "sounds/hit.wav",
+            [SOUND_GOLDEN_COLLECT] = "sounds/golden_collect.wav"
     };
 
     static const int sound_volumes[SOUND_COUNT] = {
             [SOUND_COLLECT] = 64,
-            [SOUND_HIT] = 96
+            [SOUND_HIT] = 96,
+            [SOUND_GOLDEN_COLLECT] = 64
     };
 
     for (int i = 0; i < SOUND_COUNT; ++i) {
@@ -64,7 +66,8 @@ void audio_assets_destroy(AudioAssets *audio) {
 void audio_play(const AudioAssets *audio, SoundId sound_id) {
     static const char *sound_names[SOUND_COUNT] = {
             [SOUND_COLLECT] = "SOUND_COLLECT",
-            [SOUND_HIT] = "SOUND_HIT"
+            [SOUND_HIT] = "SOUND_HIT",
+            [SOUND_GOLDEN_COLLECT] = "SOUND_GOLDEN_COLLECT"
     };
 
     if (sound_id < 0 || sound_id >= SOUND_COUNT) {

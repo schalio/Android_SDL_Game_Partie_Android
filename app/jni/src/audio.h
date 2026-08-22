@@ -6,6 +6,7 @@
 typedef enum SoundId {
     SOUND_COLLECT = 0,
     SOUND_HIT,
+    SOUND_GOLDEN_COLLECT,
     SOUND_COUNT
 } SoundId;
 
