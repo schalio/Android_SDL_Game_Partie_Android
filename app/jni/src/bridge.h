@@ -25,6 +25,7 @@ typedef struct SceneData {
     int32_t level;
     int32_t lives;
     int32_t game_over;
+    int32_t game_started;
     int32_t player_is_flashing;
 } SceneData;
 

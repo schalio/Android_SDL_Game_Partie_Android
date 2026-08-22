@@ -25,4 +25,11 @@ void hud_render_game_over(
         int score
 );
 
+void hud_render_start_screen(
+        SDL_Renderer *renderer,
+        const Hud *hud,
+        int screen_w,
+        int screen_h
+);
+
 #endif

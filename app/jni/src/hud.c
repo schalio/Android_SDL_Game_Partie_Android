@@ -237,3 +237,63 @@ void hud_render_game_over(
             top_y + title_h + spacing + score_h + spacing
     );
 }
+
+void hud_render_start_screen(
+        SDL_Renderer *renderer,
+        const Hud *hud,
+        int screen_w,
+        int screen_h
+) {
+    if (!renderer) {
+        SDL_Log("hud_render_start_screen: renderer is NULL");
+        return;
+    }
+
+    if (!hud || !hud->font || !hud->title_font) {
+        SDL_Log("hud_render_start_screen: hud/font/title_font is NULL");
+        return;
+    }
+
+    const char *title_text = "TOUCHEZ";
+    const char *subtitle_text = "POUR JOUER";
+
+    SDL_Color title_color = {70, 220, 120, 255};
+    SDL_Color subtitle_color = {255, 255, 255, 255};
+
+    int title_w = 0;
+    int title_h = 0;
+    int subtitle_w = 0;
+    int subtitle_h = 0;
+
+    if (TTF_SizeUTF8(hud->title_font, title_text, &title_w, &title_h) != 0) {
+        SDL_Log("TTF_SizeUTF8 failed for start title: %s", TTF_GetError());
+        return;
+    }
+
+    if (TTF_SizeUTF8(hud->font, subtitle_text, &subtitle_w, &subtitle_h) != 0) {
+        SDL_Log("TTF_SizeUTF8 failed for start subtitle: %s", TTF_GetError());
+        return;
+    }
+
+    int spacing = 24;
+    int total_height = title_h + spacing + subtitle_h;
+    int top_y = (screen_h - total_height) / 2;
+
+    hud_render_text(
+            renderer,
+            hud->title_font,
+            title_text,
+            title_color,
+            (screen_w - title_w) / 2,
+            top_y
+    );
+
+    hud_render_text(
+            renderer,
+            hud->font,
+            subtitle_text,
+            subtitle_color,
+            (screen_w - subtitle_w) / 2,
+            top_y + title_h + spacing
+    );
+}
