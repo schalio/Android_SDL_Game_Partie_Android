@@ -193,18 +193,22 @@ int SDL_main(int argc, char *argv[]) {
 
         SDL_RenderFillRect(renderer, &player_rect);
 
-        hud_render_score(renderer, &hud, scene.score);
-        hud_render_level(renderer, &hud, scene.level);
-        hud_render_lives(renderer, &hud, scene.lives);
+        if (!scene.game_started) {
+            hud_render_start_screen(renderer, &hud, screen_w, screen_h);
+        } else {
+            hud_render_score(renderer, &hud, scene.score);
+            hud_render_level(renderer, &hud, scene.level);
+            hud_render_lives(renderer, &hud, scene.lives);
 
-        if (scene.game_over) {
-            hud_render_game_over(
-                    renderer,
-                    &hud,
-                    screen_w,
-                    screen_h,
-                    scene.score
-            );
+            if (scene.game_over) {
+                hud_render_game_over(
+                        renderer,
+                        &hud,
+                        screen_w,
+                        screen_h,
+                        scene.score
+                );
+            }
         }
 
         SDL_RenderPresent(renderer);
