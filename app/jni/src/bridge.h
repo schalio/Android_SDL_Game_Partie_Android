@@ -21,7 +21,10 @@ typedef struct SceneData {
     Rect target;
     Rect golden_target;
     int32_t golden_target_active;
-    Rect enemy;
+    int32_t enemy_count;
+    Rect enemy1;
+    Rect enemy2;
+    Rect enemy3;
     Rect wall;
     int32_t score;
     int32_t level;

@@ -103,11 +103,21 @@ int SDL_main(int argc, char *argv[]) {
                     break;
 
                 case SDL_FINGERDOWN: {
-                    if (game_over) {
+                    SceneData scene;
+                    if (!rust_app_get_scene(app, &scene)) {
+                        break;
+                    }
+
+                    if (scene.game_over) {
                         rust_app_restart(app);
                         game_over = 0;
                         last_score = -1;
                         SDL_Log("Game restarted");
+                    } else if (!scene.game_started) {
+                        // Premier démarrage : on initialise la partie
+                        rust_app_restart(app);
+                        last_score = -1;
+                        SDL_Log("Game started");
                     } else {
                         float px = event.tfinger.x * (float)screen_w;
                         float py = event.tfinger.y * (float)screen_h;
@@ -138,6 +148,9 @@ int SDL_main(int argc, char *argv[]) {
         int32_t result = rust_app_update(app, dt);
 
         SceneData scene;
+
+//        SDL_Log("Level: %d, Enemy3: x=%d, y=%d, w=%d, h=%d", scene.level, scene.enemy3.x, scene.enemy3.y, scene.enemy3.w, scene.enemy3.h);
+
         if (!rust_app_get_scene(app, &scene)) {
             continue;
         }
@@ -197,14 +210,34 @@ int SDL_main(int argc, char *argv[]) {
             SDL_RenderFillRect(renderer, &golden_target_rect);
         }
 
-        SDL_Rect enemy_rect = {
-                scene.enemy.x,
-                scene.enemy.y,
-                scene.enemy.w,
-                scene.enemy.h
+        SDL_Rect enemy_rects[3];
+
+        enemy_rects[0] = (SDL_Rect){
+            scene.enemy1.x,
+            scene.enemy1.y,
+            scene.enemy1.w,
+            scene.enemy1.h
         };
-        SDL_SetRenderDrawColor(renderer, 220, 70, 70, 255);
-        SDL_RenderFillRect(renderer, &enemy_rect);
+
+        enemy_rects[1] = (SDL_Rect){
+            scene.enemy2.x,
+            scene.enemy2.y,
+            scene.enemy2.w,
+            scene.enemy2.h
+        };
+
+        enemy_rects[2] = (SDL_Rect){
+                scene.enemy3.x,
+                scene.enemy3.y,
+                scene.enemy3.w,
+                scene.enemy3.h
+        };
+
+        for (int i = 0; i < scene.enemy_count && i < 3; i++) {
+            SDL_SetRenderDrawColor(renderer, 220, 70, 70, 255);
+            SDL_RenderFillRect(renderer, &enemy_rects[i]);
+            // SDL_Log("Drawing enemies: enemy_count=%d", scene.enemy_count);
+        }
 
         SDL_Rect player_rect = {
                 scene.player.x,
