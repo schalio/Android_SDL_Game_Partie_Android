@@ -13,6 +13,7 @@ add_library(main SHARED
         audio.c
         android_utils.c
         hud.c
+        game_textures.c
 )
 
 target_sources(main PRIVATE bridge.c)
@@ -27,6 +28,7 @@ target_link_libraries(main
         SDL2
         SDL2_mixer
         SDL2_ttf
+        SDL2_image
         rustcore
         log
 )

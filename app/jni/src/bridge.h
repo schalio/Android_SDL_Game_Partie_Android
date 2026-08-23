@@ -7,6 +7,9 @@
 extern "C" {
 #endif
 
+#define LOGICAL_W 720
+#define LOGICAL_H 1280
+
 typedef struct AppState AppState;
 
 typedef struct Rect {

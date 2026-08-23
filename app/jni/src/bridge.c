@@ -8,6 +8,7 @@
 #include "audio.h"
 #include "android_utils.h"
 #include "hud.h"
+#include "game_textures.h"
 
 int SDL_main(int argc, char *argv[]) {
     (void)argc;
@@ -43,6 +44,13 @@ int SDL_main(int argc, char *argv[]) {
         return 1;
     }
 
+    // Définir la résolution logique (portrait)
+    SDL_RenderSetLogicalSize(renderer, LOGICAL_W, LOGICAL_H);
+
+    int screen_w = LOGICAL_W;
+    int screen_h = LOGICAL_H;
+    // SDL_GetRendererOutputSize(renderer, &screen_w, &screen_h);
+
     Hud hud;
     hud_init(&hud);
 
@@ -68,9 +76,20 @@ int SDL_main(int argc, char *argv[]) {
         return 1;
     }
 
-    int screen_w = 0;
-    int screen_h = 0;
-    SDL_GetRendererOutputSize(renderer, &screen_w, &screen_h);
+// Initialiser et charger les textures du jeu
+    GameTextures textures;
+    game_textures_init(&textures);
+
+    if (!game_textures_load(&textures, renderer)) {
+        audio_assets_destroy(&audio);
+        hud_destroy(&hud);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        Mix_CloseAudio();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
 
     AppState* app = rust_app_create();
     if (!app) {
@@ -180,34 +199,46 @@ int SDL_main(int argc, char *argv[]) {
         SDL_SetRenderDrawColor(renderer, 18, 18, 28, 255);
         SDL_RenderClear(renderer);
 
-        SDL_Rect wall_rect = {
+        SDL_Rect srcrect = {0, 0, 32, 32};
+        SDL_Rect srcrect_wall = {0, 0, 128, 128};
+
+        SDL_Rect dstrect_wall = {
                 scene.wall.x,
                 scene.wall.y,
                 scene.wall.w,
                 scene.wall.h
         };
-        SDL_SetRenderDrawColor(renderer, 110, 110, 110, 255);
-        SDL_RenderFillRect(renderer, &wall_rect);
 
-        SDL_Rect target_rect = {
+        // SDL_SetRenderDrawColor(renderer, 110, 110, 110, 255);
+        // SDL_RenderFillRect(renderer, &wall_rect);
+        SDL_RenderCopy(renderer, textures.textures[TEX_WALL], &srcrect_wall, &dstrect_wall);
+
+
+        SDL_Rect dstrect_target = {
                 scene.target.x,
                 scene.target.y,
                 scene.target.w,
                 scene.target.h
         };
-        SDL_SetRenderDrawColor(renderer, 70, 220, 120, 255);
-        SDL_RenderFillRect(renderer, &target_rect);
+
+        // SDL_SetRenderDrawColor(renderer, 70, 220, 120, 255);
+        // SDL_RenderFillRect(renderer, &target_rect);
+
+        SDL_RenderCopy(renderer, textures.textures[TEX_TARGET], &srcrect, &dstrect_target);
 
         if (scene.golden_target_active) {
-            SDL_Rect golden_target_rect = {
+
+            SDL_Rect dstrect_golden = {
                     scene.golden_target.x,
                     scene.golden_target.y,
                     scene.golden_target.w,
                     scene.golden_target.h
             };
 
-            SDL_SetRenderDrawColor(renderer, 245, 190, 45, 255);
-            SDL_RenderFillRect(renderer, &golden_target_rect);
+            // SDL_SetRenderDrawColor(renderer, 245, 190, 45, 255);
+            // SDL_RenderFillRect(renderer, &golden_target_rect);
+
+            SDL_RenderCopy(renderer, textures.textures[TEX_GOLDEN_TARGET], &srcrect, &dstrect_golden);
         }
 
         SDL_Rect enemy_rects[3];
@@ -234,18 +265,20 @@ int SDL_main(int argc, char *argv[]) {
         };
 
         for (int i = 0; i < scene.enemy_count && i < 3; i++) {
-            SDL_SetRenderDrawColor(renderer, 220, 70, 70, 255);
-            SDL_RenderFillRect(renderer, &enemy_rects[i]);
+            // SDL_SetRenderDrawColor(renderer, 220, 70, 70, 255);
+            // SDL_RenderFillRect(renderer, &enemy_rects[i]);
             // SDL_Log("Drawing enemies: enemy_count=%d", scene.enemy_count);
+            SDL_RenderCopy(renderer, textures.textures[TEX_ENEMY], &srcrect, &enemy_rects[i]);
         }
 
-        SDL_Rect player_rect = {
+        SDL_Rect dstrect_player = {
                 scene.player.x,
                 scene.player.y,
                 scene.player.w,
                 scene.player.h
         };
 
+        /*
         if (scene.player_is_flashing) {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         } else {
@@ -253,6 +286,9 @@ int SDL_main(int argc, char *argv[]) {
         }
 
         SDL_RenderFillRect(renderer, &player_rect);
+         */
+        SDL_RenderCopy(renderer, textures.textures[TEX_PLAYER], &srcrect, &dstrect_player);
+
 
         if (!scene.game_started) {
             hud_render_start_screen(renderer, &hud, screen_w, screen_h);
@@ -279,6 +315,7 @@ int SDL_main(int argc, char *argv[]) {
     rust_app_destroy(app);
 
     audio_assets_destroy(&audio);
+    game_textures_destroy(&textures);
     hud_destroy(&hud);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
