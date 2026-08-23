@@ -7,42 +7,6 @@ int game_textures_init(GameTextures* textures) {
     memset(textures->textures, 0, sizeof(textures->textures));
     return 1;
 }
-/*int game_textures_init(GameTextures* textures) {
-    textures->golden_target = NULL;
-    textures->target = NULL;
-    return 1;
-
-
-int game_textures_load(GameTextures* textures, SDL_Renderer* renderer) {
-    // Charger le sprite de la cible dorée (32x32)
-    textures->golden_target = load_texture(renderer, "sprites/diamond.png");
-    if (!textures->golden_target) {
-        SDL_Log("Failed to load sprites/diamond.png");
-        return 0;
-    }
-
-    // Charger le sprite de la cible normale (32x32)
-    textures->target = load_texture(renderer, "sprites/ruppy.png");
-    if (!textures->target) {
-        SDL_Log("Failed to load sprites/ruppy.png");
-        return 0;
-    }
-    return 1;
-}
-
-void game_textures_destroy(GameTextures* textures) {
-    if (textures->golden_target) {
-        SDL_DestroyTexture(textures->golden_target);
-        textures->golden_target = NULL;
-    }
-
-    if (textures->target) {
-        SDL_DestroyTexture(textures->target);
-        textures->target = NULL;
-    }
-}
-*/
-
 
 int game_textures_load(GameTextures* textures, SDL_Renderer* renderer) {
     // Tableau des chemins de fichiers, dans le même ordre que TextureId
@@ -50,6 +14,7 @@ int game_textures_load(GameTextures* textures, SDL_Renderer* renderer) {
             "sprites/ruppy.png",        // TEX_TARGET
             "sprites/diamond.png", // TEX_GOLDEN_TARGET
             "sprites/player.png",        // TEX_PLAYER
+            "sprites/player_flash.png",  // TEX_PLAYER_FLASH
             "sprites/enemy.png",         // TEX_ENEMY
             "sprites/wall.png",          // TEX_WALL
     };

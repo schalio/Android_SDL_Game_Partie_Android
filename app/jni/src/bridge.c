@@ -287,7 +287,12 @@ int SDL_main(int argc, char *argv[]) {
 
         SDL_RenderFillRect(renderer, &player_rect);
          */
-        SDL_RenderCopy(renderer, textures.textures[TEX_PLAYER], &srcrect, &dstrect_player);
+
+        SDL_Texture* player_texture = scene.player_is_flashing
+                                      ? textures.textures[TEX_PLAYER_FLASH]
+                                      : textures.textures[TEX_PLAYER];
+
+        SDL_RenderCopy(renderer, player_texture, &srcrect, &dstrect_player);
 
 
         if (!scene.game_started) {

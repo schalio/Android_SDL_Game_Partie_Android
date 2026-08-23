@@ -7,6 +7,7 @@ typedef enum TextureId {
     TEX_TARGET = 0,
     TEX_GOLDEN_TARGET,
     TEX_PLAYER,
+    TEX_PLAYER_FLASH,
     TEX_ENEMY,
     TEX_WALL,
     TEX_COUNT
@@ -16,11 +17,6 @@ typedef struct {
     SDL_Texture* textures[TEX_COUNT];
 } GameTextures;
 
-/* typedef struct {
-    SDL_Texture* golden_target;
-    SDL_Texture* target;
-} GameTextures;
-*/
 // Initialiser les textures
 int game_textures_init(GameTextures* textures);
 
