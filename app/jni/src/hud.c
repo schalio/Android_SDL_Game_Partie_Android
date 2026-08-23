@@ -156,7 +156,8 @@ void hud_render_game_over(
         const Hud *hud,
         int screen_w,
         int screen_h,
-        int score
+        int score,
+        int high_score
 ) {
     if (!renderer) {
         SDL_Log("hud_render_game_over: renderer is NULL");
@@ -172,10 +173,14 @@ void hud_render_game_over(
     const char *restart_text = "Touchez pour recommencer";
 
     char final_score_text[64];
-    snprintf(final_score_text, sizeof(final_score_text), "Score final : %d", score);
+    snprintf(final_score_text, sizeof(final_score_text), "Score : %d", score);
+
+    char high_score_text[64];
+    snprintf(high_score_text, sizeof(high_score_text), "HIGH SCORE : %d", high_score);
 
     SDL_Color title_color = {255, 80, 80, 255};
     SDL_Color body_color = {255, 255, 255, 255};
+    SDL_Color gold_color = {255, 215, 0, 255};
 
     int title_w = 0;
     int title_h = 0;
@@ -183,6 +188,8 @@ void hud_render_game_over(
     int score_h = 0;
     int restart_w = 0;
     int restart_h = 0;
+    int high_score_w = 0;
+    int high_score_h = 0;
 
     if (TTF_SizeUTF8(hud->title_font, game_over_text, &title_w, &title_h) != 0) {
         SDL_Log("TTF_SizeUTF8 failed for GAME OVER: %s", TTF_GetError());
@@ -199,14 +206,22 @@ void hud_render_game_over(
         return;
     }
 
+    if (TTF_SizeUTF8(hud->title_font, high_score_text, &high_score_w, &high_score_h) != 0) {
+        SDL_Log("TTF_SizeUTF8 failed for HIGH SCORE: %s", TTF_GetError());
+        return;
+    }
+
     int spacing = 24;
+    int big_spacing = 80;
 
     int total_height =
             title_h +
             spacing +
             score_h +
             spacing +
-            restart_h;
+            restart_h +
+            big_spacing +
+            high_score_h;
 
     int top_y = (screen_h - total_height) / 2;
 
@@ -236,6 +251,16 @@ void hud_render_game_over(
             (screen_w - restart_w) / 2,
             top_y + title_h + spacing + score_h + spacing
     );
+
+    hud_render_text(
+            renderer,
+            hud->title_font,
+            high_score_text,
+            gold_color,
+            (screen_w - high_score_w) / 2,
+            top_y + title_h + spacing + score_h + spacing + restart_h + big_spacing
+    );
+
 }
 
 void hud_render_start_screen(

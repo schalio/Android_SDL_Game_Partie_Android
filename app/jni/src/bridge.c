@@ -9,6 +9,7 @@
 #include "android_utils.h"
 #include "hud.h"
 #include "game_textures.h"
+#include "high_score.h"
 
 int SDL_main(int argc, char *argv[]) {
     (void)argc;
@@ -109,6 +110,10 @@ int SDL_main(int argc, char *argv[]) {
     int running = 1;
     int game_over = 0;
 
+    // Charger le meilleur score
+    int high_score = load_high_score();
+    SDL_Log("Initial high score: %d", high_score);
+
     uint32_t previous = SDL_GetTicks();
     int32_t last_score = -1;
 
@@ -174,7 +179,22 @@ int SDL_main(int argc, char *argv[]) {
             continue;
         }
 
-        game_over = scene.game_over;
+        // game_over = scene.game_over;
+
+        // Mettre à jour le meilleur score
+        if (scene.score > high_score) {
+            high_score = scene.score;
+            SDL_Log("New high score: %d", high_score);
+        }
+
+        // Sauvegarder si game over
+        if (scene.game_over && !game_over) {
+            if (scene.score >= load_high_score()) {
+                save_high_score(scene.score);
+                SDL_Log("High score saved: %d", scene.score);
+            }
+            game_over = 1;
+        }
 
         if (scene.score != last_score) {
             SDL_Log("Score: %d", scene.score);
@@ -308,7 +328,8 @@ int SDL_main(int argc, char *argv[]) {
                         &hud,
                         screen_w,
                         screen_h,
-                        scene.score
+                        scene.score,
+                        high_score
                 );
             }
         }
