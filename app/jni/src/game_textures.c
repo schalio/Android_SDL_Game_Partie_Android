@@ -16,7 +16,7 @@ int game_textures_load(GameTextures* textures, SDL_Renderer* renderer) {
             "sprites/player.png",        // TEX_PLAYER
             "sprites/player_flash.png",  // TEX_PLAYER_FLASH
             "sprites/enemy.png",         // TEX_ENEMY
-            "sprites/wall.png",          // TEX_WALL
+            "sprites/planet.png",          // TEX_WALL
     };
 
     for (int i = 0; i < TEX_COUNT; i++) {

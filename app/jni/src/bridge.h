@@ -19,6 +19,16 @@ typedef struct Rect {
     int32_t h;
 } Rect;
 
+typedef struct {
+    float x;
+    float y;
+    float vx;
+    float vy;
+    float life;
+    float max_life;
+    float size;
+} Particle;
+
 typedef struct SceneData {
     Rect player;
     Rect target;
@@ -35,6 +45,10 @@ typedef struct SceneData {
     int32_t game_over;
     int32_t game_started;
     int32_t player_is_flashing;
+    Particle particles[100];
+    int particle_count;
+    float player_angle;
+    int32_t player_visible;
 } SceneData;
 
 extern AppState* rust_app_create(void);
