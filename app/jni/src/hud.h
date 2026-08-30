@@ -22,7 +22,8 @@ void hud_render_game_over(
         const Hud *hud,
         int screen_w,
         int screen_h,
-        int score
+        int score,
+        int high_score
 );
 
 void hud_render_start_screen(

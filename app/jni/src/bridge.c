@@ -9,6 +9,7 @@
 #include "android_utils.h"
 #include "hud.h"
 #include "game_textures.h"
+#include "high_score.h"
 
 int SDL_main(int argc, char *argv[]) {
     (void)argc;
@@ -109,6 +110,10 @@ int SDL_main(int argc, char *argv[]) {
     int running = 1;
     int game_over = 0;
 
+    // Charger le meilleur score
+    int high_score = load_high_score();
+    SDL_Log("Initial high score: %d", high_score);
+
     uint32_t previous = SDL_GetTicks();
     int32_t last_score = -1;
 
@@ -174,7 +179,22 @@ int SDL_main(int argc, char *argv[]) {
             continue;
         }
 
-        game_over = scene.game_over;
+        // game_over = scene.game_over;
+
+        // Mettre à jour le meilleur score
+        if (scene.score > high_score) {
+            high_score = scene.score;
+            SDL_Log("New high score: %d", high_score);
+        }
+
+        // Sauvegarder si game over
+        if (scene.game_over && !game_over) {
+            if (scene.score >= load_high_score()) {
+                save_high_score(scene.score);
+                SDL_Log("High score saved: %d", scene.score);
+            }
+            game_over = 1;
+        }
 
         if (scene.score != last_score) {
             SDL_Log("Score: %d", scene.score);
@@ -200,7 +220,8 @@ int SDL_main(int argc, char *argv[]) {
         SDL_RenderClear(renderer);
 
         SDL_Rect srcrect = {0, 0, 32, 32};
-        SDL_Rect srcrect_wall = {0, 0, 128, 128};
+        SDL_Rect srcrect_wall = {0, 0, 118, 118};
+        SDL_Rect srcrect_player = {0, 0, 256, 256};
 
         SDL_Rect dstrect_wall = {
                 scene.wall.x,
@@ -208,6 +229,41 @@ int SDL_main(int argc, char *argv[]) {
                 scene.wall.w,
                 scene.wall.h
         };
+
+        // Dessiner les particules (étoiles en fond + trainée du vaiseau)
+        for (int i = 0; i < scene.particle_count; i++) {
+            Particle* p = &scene.particles[i];
+
+            // Ne pas dessiner les particules mortes
+            if (p->life <= 0.0f) {
+                continue;
+            }
+
+            // Calcul de la transparence (alpha)
+            float alpha = (p->life / p->max_life) * 255.0f;
+            if (alpha < 0.0f) alpha = 0.0f;
+            if (alpha > 255.0f) alpha = 255.0f;
+
+            // Couleur différente pour les traînées (index >= 50)
+            if (i >= 50) {
+                // Traînées : orange/rouge avec variation
+                SDL_SetRenderDrawColor(renderer, 255, 100 + (i % 100), 0, (Uint8)alpha);
+            } else {
+                // Étoiles : blanc/bleu
+                SDL_SetRenderDrawColor(renderer, 200, 220, 255, (Uint8)alpha);
+            }
+
+            // Rectangle de la particule
+            SDL_Rect particle_rect = {
+                    (int)p->x,
+                    (int)p->y,
+                    (int)p->size,
+                    (int)p->size
+            };
+
+            SDL_RenderFillRect(renderer, &particle_rect);
+        }
+
 
         // SDL_SetRenderDrawColor(renderer, 110, 110, 110, 255);
         // SDL_RenderFillRect(renderer, &wall_rect);
@@ -292,7 +348,19 @@ int SDL_main(int argc, char *argv[]) {
                                       ? textures.textures[TEX_PLAYER_FLASH]
                                       : textures.textures[TEX_PLAYER];
 
-        SDL_RenderCopy(renderer, player_texture, &srcrect, &dstrect_player);
+        // SDL_RenderCopy(renderer, player_texture, &srcrect_player, &dstrect_player);
+        if (scene.player_visible != 0) {
+            SDL_RenderCopyEx(
+                    renderer,
+                    player_texture,
+                    &srcrect_player,
+                    &dstrect_player,
+                    scene.player_angle,  // angle en degrés
+                    NULL,                // point de rotation (NULL = centre)
+                    SDL_FLIP_NONE        // pas de flip
+            );
+            // SDL_Log("Player angle: %f", scene.player_angle);
+        }
 
 
         if (!scene.game_started) {
@@ -308,7 +376,8 @@ int SDL_main(int argc, char *argv[]) {
                         &hud,
                         screen_w,
                         screen_h,
-                        scene.score
+                        scene.score,
+                        high_score
                 );
             }
         }

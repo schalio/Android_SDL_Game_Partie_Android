@@ -14,6 +14,7 @@ add_library(main SHARED
         android_utils.c
         hud.c
         game_textures.c
+        high_score.c
 )
 
 target_sources(main PRIVATE bridge.c)
